@@ -16,7 +16,7 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, "Hello, World 2!")
+		fmt.Fprint(w, "Hello, World 3!")
 	})
 
 	addr := "0.0.0.0:" + port
