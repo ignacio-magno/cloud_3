@@ -1,0 +1,36 @@
+name: Deploy Python Server
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+      uses: actions/checkout@v4
+
+      - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+
+      - name: Stop old server if running
+      run: |
+        pkill -f "python3 server.py" || true
+
+      - name: Start server in background
+      env:
+        PORT: "80"
+      run: |
+        nohup python3 server.py > server.log 2>&1 &
+        echo "Server started in background"
+
+      - name: Show process and last logs
+      run: |
+        pgrep -af "python3 server.py" || true
+        tail -n 20 server.log || true
