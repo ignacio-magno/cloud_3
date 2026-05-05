@@ -30,7 +30,7 @@ class Handler(BaseHTTPRequestHandler):
 
         try:
             subprocess.run(
-                "cd /home/ubuntu && git pull && pm2 restart all",
+                "cd /home/ubuntu/cloud_3 && git pull && pm2 restart mi-servidor",
                 shell=True,
                 check=True
             )
