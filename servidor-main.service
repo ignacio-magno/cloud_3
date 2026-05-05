@@ -1,0 +1,17 @@
+[Unit]
+Description=Servidor Principal Go
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/ubuntu/cloud_3
+Environment="PORT=80"
+ExecStart=/home/ubuntu/cloud_3/bin/server
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

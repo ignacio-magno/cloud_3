@@ -1,51 +1,72 @@
-package webhook
 package main
 
 import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"os/exec"
+)
 
+const repoPath = "/home/ubuntu/cloud_3"
 
+func runCommand(name string, args ...string) error {
+	cmd := exec.Command(name, args...)
+	cmd.Dir = repoPath
+	output, err := cmd.CombinedOutput()
+	if len(output) > 0 {
+		log.Printf("%s %v output:\n%s", name, args, string(output))
+	}
+	return err
+}
 
+func deployHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
+	log.Println("Deploy started: pull -> build -> restart main service")
 
+	if err := runCommand("git", "pull"); err != nil {
+		log.Printf("git pull failed: %v", err)
+		http.Error(w, "git pull failed", http.StatusInternalServerError)
+		return
+	}
 
+	if err := runCommand("go", "build", "-o", "bin/server", "cmd/server/main.go"); err != nil {
+		log.Printf("build failed: %v", err)
+		http.Error(w, "build failed", http.StatusInternalServerError)
+		return
+	}
 
+	if err := runCommand("systemctl", "restart", "servidor-main"); err != nil {
+		log.Printf("restart failed: %v", err)
+		http.Error(w, "restart failed", http.StatusInternalServerError)
+		return
+	}
 
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, "deploy ok")
+}
 
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, "webhook up")
+}
 
+func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
 
+	http.HandleFunc("/", healthHandler)
+	http.HandleFunc("/deploy", deployHandler)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-}	log.Fatal(http.ListenAndServe(addr, nil))	log.Printf("Webhook corriendo en http://%s/deploy\n", addr)	addr := "0.0.0.0:" + port	})		fmt.Fprint(w, "Pull + PM2 restart OK")		w.WriteHeader(http.StatusOK)		w.Header().Set("Content-Type", "text/plain")		}			return			http.Error(w, "PM2 restart failed", http.StatusInternalServerError)			log.Printf("PM2 restart error: %v\n", err)		if err := cmd.Run(); err != nil {		cmd = exec.Command("pm2", "restart", "mi-servidor")		// PM2 restart		}			return			http.Error(w, "Git pull failed", http.StatusInternalServerError)			log.Printf("Git pull error: %v\n", err)		if err := cmd.Run(); err != nil {		cmd := exec.Command("git", "-C", "/home/ubuntu/cloud_3", "pull")		// Git pull		log.Println("Deploy iniciado: git pull + pm2 restart")		}			return			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)		if r.Method != "POST" {	http.HandleFunc("/deploy", func(w http.ResponseWriter, r *http.Request) {	}		port = "3000"	if port == "" {	port := os.Getenv("PORT")func main() {)	"os/exec"	"os"
+	addr := "0.0.0.0:" + port
+	log.Printf("Webhook listening on %s", addr)
+	log.Fatal(http.ListenAndServe(addr, nil))
+}

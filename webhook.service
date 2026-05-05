@@ -1,0 +1,17 @@
+[Unit]
+Description=Webhook Deploy
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/ubuntu/cloud_3
+Environment="PORT=3000"
+ExecStart=/home/ubuntu/cloud_3/bin/webhook
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
