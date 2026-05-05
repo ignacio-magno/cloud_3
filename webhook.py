@@ -1,10 +1,5 @@
-import json
-import hmac
-import hashlib
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import subprocess
-
-SECRET = b"mi_secret_super_seguro"
 
 class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -13,34 +8,32 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
             return
 
-        content_length = int(self.headers['Content-Length'])
-        body = self.rfile.read(content_length)
+        content_length = int(self.headers.get("Content-Length", 0))
+        if content_length:
+            self.rfile.read(content_length)
 
-        signature = self.headers.get('X-Hub-Signature-256')
-        mac = hmac.new(SECRET, msg=body, digestmod=hashlib.sha256)
-        expected = "sha256=" + mac.hexdigest()
-
-        if not hmac.compare_digest(expected, signature):
-            self.send_response(401)
-            self.end_headers()
-            self.wfile.write(b"Invalid signature")
-            return
-
-        print("🚀 Deploy iniciado...")
+        print("Deploy iniciado: git pull + pm2 restart")
 
         try:
             subprocess.run(
-                "cd /home/ubuntu/cloud_3 && git pull && pm2 restart mi-servidor",
-                shell=True,
-                check=True
+                ["git", "-C", "/home/ubuntu/cloud_3", "pull"],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            subprocess.run(
+                ["pm2", "restart", "mi-servidor"],
+                check=True,
+                capture_output=True,
+                text=True,
             )
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(b"Deploy OK")
-        except subprocess.CalledProcessError as e:
+            self.wfile.write(b"Pull + PM2 restart OK")
+        except subprocess.CalledProcessError:
             self.send_response(500)
             self.end_headers()
-            self.wfile.write(b"Deploy failed")
+            self.wfile.write(b"Pull or PM2 restart failed")
 
 server = HTTPServer(("0.0.0.0", 3000), Handler)
 print("Webhook corriendo en puerto 3000...")
