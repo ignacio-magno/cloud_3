@@ -12,7 +12,7 @@ class Handler(BaseHTTPRequestHandler):
 
 def run():
     host = os.getenv("HOST", "0.0.0.0")
-    port = int(os.getenv("PORT", "8000"))
+    port = int(os.getenv("PORT", "80"))
     server = HTTPServer((host, port), Handler)
     print(f"Servidor corriendo en http://{host}:{port}")
     server.serve_forever()
