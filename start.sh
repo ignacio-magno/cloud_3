@@ -10,13 +10,14 @@ if [ ! -d "venv" ]; then
     python3 -m venv venv
 fi
 
-# Activar entorno y instalar/actualizar dependencias
-. venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
+# Instalar dependencias usando el pip del venv (no el del sistema)
+echo "Instalando dependencias..."
+./venv/bin/pip install --upgrade pip
+./venv/bin/pip install -r requirements.txt
 
-# Iniciar con Gunicorn
-gunicorn --workers 4 \
+# Iniciar con Gunicorn usando el python del venv
+echo "Iniciando servidor..."
+./venv/bin/gunicorn --workers 4 \
          --worker-class sync \
          --bind 0.0.0.0:9000 \
          --access-logfile - \
