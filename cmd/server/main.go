@@ -21,7 +21,7 @@ func main() {
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Bienvenido a Aurora Shop</title>
+	<title>Bienvenidos a Aurora Shop</title>
 	<style>
 		:root {
 			--bg: #f6f1e8;
