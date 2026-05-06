@@ -133,7 +133,7 @@ func main() {
 			<p class="lead">Este sitio esta hecho para transmitir una idea simple: que la tecnologia tambien puede sentirse calida. Gracias por visitar.</p>
 			<div class="grid">
 				<article class="card">
-					<h3>Cuaderno Nebula</h3>
+					<h3>Cuaderno Nebula nacho</h3>
 					<p>Para anotar ideas grandes en paginas pequenas.</p>
 					<p class="price">$12.990</p>
 				</article>
