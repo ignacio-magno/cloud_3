@@ -154,7 +154,7 @@ func main() {
 				</article>
 			</div>
 		</section>
-		<p class="footer-note">Mensaje del dia: haz espacio para algo bonito hoy XD.</p>
+		<p class="footer-note">Mensaje del dia: haz espacio para algo bonito hoy.</p>
 	</main>
 </body>
 </html>`)
